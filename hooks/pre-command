@@ -58,7 +58,7 @@ nohup "$nix" run git+https://git.ocjtech.us/jeff/niks3#niks3-hook -- serve \
   --server-url "$server_url" \
   --auth-token-path "$NIKS3_TMP_DIR/auth-token" \
   --batch-size 5 \
-  --idle-exit-timeout 300 \
+  --idle-exit-timeout 0 \
   --socket "$NIKS3_TMP_DIR/upload-to-cache.sock" \
   --db-path "$NIKS3_TMP_DIR/upload-queue.db" \
   > "$NIKS3_TMP_DIR/serve.log" 2>&1 &
