@@ -60,7 +60,7 @@ echo "$!" > "$NIKS3_TMP_DIR/serve.pid"
 counter=0
 while [[ ! -f "$NIKS3_TMP_DIR/upload-to-cache.sock" ]] && ((counter < 5))
 do
-  echo "Waiting for the upload server to start..."
+  echo "Waiting for the upload server to start…"
   ((counter++))
   sleep 1
 done

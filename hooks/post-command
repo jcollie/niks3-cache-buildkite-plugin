@@ -6,7 +6,7 @@
 counter=0
 while (($(nix run nixpkgs#sqlite -- "$NIKS3_TMP_DIR/upload-queue.db" 'SELECT COUNT(*) from upload_queue;' || echo "0") > 0)) && ((counter < 60))
 do
-  echo ":alarm_clock: Waiting for the upload server to finish..."
+  echo "Waiting for the upload server to finish…"
   ((counter++))
   sleep 1
 done
