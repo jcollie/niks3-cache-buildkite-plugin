@@ -35,15 +35,14 @@ echo "#/bin/sh" > "$NIKS3_TMP_DIR/post-build-hook"
 echo "exec https://github.com/Mic92/niks3#niks3-hook -- send --socket $NIKS3_TMP_DIR/upload-to-cache.sock" >> "$NIKS3_TMP_DIR/post-build-hook"
 chmod a+x "$NIKS3_TMP_DIR/post-build-hook"
 
-{ \
-  echo "extra-substituters = $cache_url" ;\
-  echo "extra-trusted-public-keys = $public_key" ;\
-  echo "post-build-hook = $NIKS3_TMP_DIR/post-build-hook" ;\
-} >> /etc/nix/nix.conf
+sed -i "/^extra-substituters/" "s/\$/ $cache_url/" /etc/nix.nix.conf
+sed -i "/^extra-trusted-public-keys/" "s/\$/ $public_key/"  /etc/nix/nix.conf
+echo "post-build-hook = $NIKS3_TMP_DIR/post-build-hook" >> /etc/nix/nix.conf
 
 echo "+++ Nix Conf"
 cat /etc/nix/nix.conf
-echo "~~~ Nix Conf"
+
+echo "+++ Setting up the server"
 
 echo "$token" > "$NIKS3_TMP_DIR/auth-token"
 
