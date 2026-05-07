@@ -4,19 +4,19 @@
 # SPDX-License-Identifier: MIT
 
 
-cache_url="$BUILDKITE_PLUGIN_NIKS3_CACHE_URL"
+cache_url="$BUILDKITE_PLUGIN_NIKS3_CACHE_CACHE_URL"
 if [[ "$cache_url" == "" ]]; then
   echo "Missing cache url configuration."
   exit 1
 fi
 
-public_key="$BUILDKITE_PLUGIN_NIKS3_PUBLIC_KEY"
+public_key="$BUILDKITE_PLUGIN_NIKS3_CACHE_PUBLIC_KEY"
 if [[ "$public_key" == "" ]]; then
   echo "Missing public key configuration."
   exit 1
 fi
 
-server_url="$BUILDKITE_PLUGIN_NIKS3_SERVER_URL"
+server_url="$BUILDKITE_PLUGIN_NIKS3_CACHE_SERVER_URL"
 if [[ "$server_url" == "" ]]; then
   echo "Missing server url configuration."
   exit 1
