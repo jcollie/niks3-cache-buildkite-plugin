@@ -37,7 +37,6 @@ chmod a+x "$NIKS3_TMP_DIR/post-build-hook"
 
 echo "extra-substituters = $cache_url" >> /etc/nix/nix.custom.conf
 echo "extra-trusted-public-keys = $public_key" >> /etc/nix/nix.custom.conf
-echo "post-build-hook = $NIKS3_TMP_DIR/post-build-hook" >> /etc/nix/nix.custom.conf
 
 echo "+++ Nix Conf"
 cat /etc/nix/nix.conf
@@ -58,3 +57,6 @@ nohup nix run https://git.ocjtech.us/jeff/niks3#niks3-hook -- serve \
   --db-path "$NIKS3_TMP_DIR/upload-queue.db" \
   > "$NIKS3_TMP_DIR/serve.log" 2>&1 &
 echo "$!" > "$NIKS3_TMP_DIR/serve.pid"
+
+echo "+++ Install post build hook"
+echo "post-build-hook = $NIKS3_TMP_DIR/post-build-hook" >> /etc/nix/nix.custom.conf
