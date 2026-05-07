@@ -32,38 +32,30 @@ fi
 NIKS3_TMP_DIR=$(mktemp -d)
 export NIKS3_TMP_DIR
 
-echo "+++ PATH"
-echo "$PATH"
-
-echo "+++ Setting up hook script"
+echo "+++ Setting up the Nix post build hook"
 nix=$(which nix)
 
 echo "#/bin/sh" > "$NIKS3_TMP_DIR/post-build-hook"
-echo "exec $nix run git+${niks3_url}#niks3-hook -- send --socket $NIKS3_TMP_DIR/upload-to-cache.sock" >> "$NIKS3_TMP_DIR/post-build-hook"
+echo "exec \"$nix\" run \"git+${niks3_url}#niks3-hook\" -- send --socket \"$NIKS3_TMP_DIR/upload-to-cache.sock\"" >> "$NIKS3_TMP_DIR/post-build-hook"
 chmod a+x "$NIKS3_TMP_DIR/post-build-hook"
 
+echo "+++ Adding the cache to the Nix configuration"
 echo "extra-substituters = $cache_url" >> /etc/nix/nix.custom.conf
 echo "extra-trusted-public-keys = $public_key" >> /etc/nix/nix.custom.conf
 
-echo "+++ Nix Conf"
-cat /etc/nix/nix.conf
-echo "+++ Nix Conf"
-cat /etc/nix/nix.custom.conf
-
-echo "+++ Setting up the server"
+echo "+++ Starting the upload server"
 
 echo "$token" > "$NIKS3_TMP_DIR/auth-token"
 
-# watch for builds in the background
-nohup "$nix" run git+${niks3_url}#niks3-hook -- serve \
+nohup "$nix" run "git+${niks3_url}#niks3-hook" -- serve \
   --server-url "$server_url" \
   --auth-token-path "$NIKS3_TMP_DIR/auth-token" \
-  --batch-size 5 \
-  --idle-exit-timeout 0 \
   --socket "$NIKS3_TMP_DIR/upload-to-cache.sock" \
   --db-path "$NIKS3_TMP_DIR/upload-queue.db" \
+  --idle-exit-timeout 0 \
+  --batch-size 5 \
   > "$NIKS3_TMP_DIR/serve.log" 2>&1 &
 echo "$!" > "$NIKS3_TMP_DIR/serve.pid"
 
-echo "+++ Install post build hook"
+echo "+++ Installing the Nix post build hook"
 echo "post-build-hook = $NIKS3_TMP_DIR/post-build-hook" >> /etc/nix/nix.custom.conf
