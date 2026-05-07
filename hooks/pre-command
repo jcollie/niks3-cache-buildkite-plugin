@@ -31,6 +31,10 @@ fi
 NIKS3_TMP_DIR=$(mktemp -d)
 export NIKS3_TMP_DIR
 
+echo "+++ PATH"
+echo "$PATH"
+
+echo "+++ Setting up hook script"
 nix=$(which nix)
 
 echo "#/bin/sh" > "$NIKS3_TMP_DIR/post-build-hook"
@@ -50,7 +54,7 @@ echo "+++ Setting up the server"
 echo "$token" > "$NIKS3_TMP_DIR/auth-token"
 
 # watch for builds in the background
-nohup nix run git+https://git.ocjtech.us/jeff/niks3#niks3-hook -- serve \
+nohup "$nix" run git+https://git.ocjtech.us/jeff/niks3#niks3-hook -- serve \
   --server-url "$server_url" \
   --auth-token-path "$NIKS3_TMP_DIR/auth-token" \
   --batch-size 5 \
