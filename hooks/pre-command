@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# SPDX-FileCopyrightText: © 2026 Jeffrey C. Ollie
+# SPDX-License-Identifier: MIT
+
+
+cache_url="$BUILDKITE_PLUGIN_NIKS3_CACHE_URL"
+if [[ "$cache_url" == "" ]]; then
+  echo "Missing cache url configuration."
+  exit 1
+fi
+
+public_key="$BUILDKITE_PLUGIN_NIKS3_PUBLIC_KEY"
+if [[ "$public_key" == "" ]]; then
+  echo "Missing public key configuration."
+  exit 1
+fi
+
+server_url="$BUILDKITE_PLUGIN_NIKS3_SERVER_URL"
+if [[ "$server_url" == "" ]]; then
+  echo "Missing server url configuration."
+  exit 1
+fi
+
+token="$NIKS3_AUTH_TOKEN"
+if [[ "$token" == "" ]]; then
+  echo "Missing token configuration."
+  exit 1
+fi
+
+NIKS3_TMP_DIR=$(mktemp -d)
+export NIKS3_TMP_DIR
+
+echo "#/bin/sh" > "$NIKS3_TMP_DIR/post-build-hook"
+echo "exec github:Mic92/niks3#niks3-hook -- send --socket $NIKS3_TMP_DIR/upload-to-cache.sock" >> "$NIKS3_TMP_DIR/post-build-hook"
+chmod a+x "$NIKS3_TMP_DIR/post-build-hook"
+
+{ \
+  echo "extra-substituters = $cache_url" ;\
+  echo "extra-trusted-public-keys = $public_key" ;\
+  echo "post-build-hook = $NIKS3_TMP_DIR/post-build-hook" ;\
+} >> /etc/nix/nix.conf
+
+echo "$token" > "$NIKS3_TMP_DIR/auth-token"
+
+# watch for builds in the background
+nohup nix run github:Mic92/niks3#niks3-hook -- serve \
+  --server-url "$server_url" \
+  --auth-token-path "$NIKS3_TMP_DIR/auth-token" \
+  --batch-size 5 \
+  --idle-exit-timeout 0 \
+  --socket "$NIKS3_TMP_DIR/upload-to-cache.sock" \
+  --db-path "$NIKS3_TMP_DIR/upload-queue.db" \
+  > "$NIKS3_TMP_DIR/serve.log" 2>&1 &
+echo "$!" > "$NIKS3_TMP_DIR/serve.pid"

@@ -1,0 +1,17 @@
+# SPDX-FileCopyrightText: © 2026 Jeffrey C. Ollie <jeff@ocjtech.us>
+# SPDX-License-Identifier: MIT
+
+name: niks3 Cache
+description: Enable caching of your Nix builds on your Buildkite agent using niks3
+author: https://git.ocjtech.us/jeff/
+requirements:
+  - nix
+configuration:
+  properties:
+    cache_url:
+      type: string
+    server_url:
+      type: string
+    public_key:
+      type: string
+  additionalProperties: false
