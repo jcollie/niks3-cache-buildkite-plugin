@@ -32,7 +32,7 @@ NIKS3_TMP_DIR=$(mktemp -d)
 export NIKS3_TMP_DIR
 
 echo "#/bin/sh" > "$NIKS3_TMP_DIR/post-build-hook"
-echo "exec https://github.com/Mic92/niks3#niks3-hook -- send --socket $NIKS3_TMP_DIR/upload-to-cache.sock" >> "$NIKS3_TMP_DIR/post-build-hook"
+echo "exec nix run https://git.ocjtech.us/jeff/niks3#niks3-hook -- send --socket $NIKS3_TMP_DIR/upload-to-cache.sock" >> "$NIKS3_TMP_DIR/post-build-hook"
 chmod a+x "$NIKS3_TMP_DIR/post-build-hook"
 
 echo "extra-substituters = $cache_url" >> /etc/nix/nix.custom.conf
@@ -49,7 +49,7 @@ echo "+++ Setting up the server"
 echo "$token" > "$NIKS3_TMP_DIR/auth-token"
 
 # watch for builds in the background
-nohup nix run https://github.com/Mic92/niks3#niks3-hook -- serve \
+nohup nix run https://git.ocjtech.us/jeff/niks3#niks3-hook -- serve \
   --server-url "$server_url" \
   --auth-token-path "$NIKS3_TMP_DIR/auth-token" \
   --batch-size 5 \
