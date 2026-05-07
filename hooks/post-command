@@ -4,14 +4,15 @@
 # SPDX-License-Identifier: MIT
 
 counter=0
-while (($(nix run nixpkgs#sqlite -- "$NIKS3_TMP_DIR/upload-queue.db" 'SELECT COUNT(*) from upload_queue;') > 0)) && ((counter < 60))
+while (($(nix run nixpkgs#sqlite -- "$NIKS3_TMP_DIR/upload-queue.db" 'SELECT COUNT(*) from upload_queue;' || echo "0") > 0)) && ((counter < 60))
 do
-  echo "waiting for server to finish..."
+  echo ":alarm_clock: waiting for server to finish..."
   ((counter++))
   sleep 1
 done
 
 # try and kill the "serve" background command
+echo "--- :hammer: killing the server"
 pid=$(cat "$NIKS3_TMP_DIR/serve.pid")
 if [[ -n "$pid" ]]; then
   kill "$pid"

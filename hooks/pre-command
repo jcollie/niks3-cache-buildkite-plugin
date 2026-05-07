@@ -32,7 +32,7 @@ NIKS3_TMP_DIR=$(mktemp -d)
 export NIKS3_TMP_DIR
 
 echo "#/bin/sh" > "$NIKS3_TMP_DIR/post-build-hook"
-echo "exec github:Mic92/niks3#niks3-hook -- send --socket $NIKS3_TMP_DIR/upload-to-cache.sock" >> "$NIKS3_TMP_DIR/post-build-hook"
+echo "exec https://github.com/Mic92/niks3#niks3-hook -- send --socket $NIKS3_TMP_DIR/upload-to-cache.sock" >> "$NIKS3_TMP_DIR/post-build-hook"
 chmod a+x "$NIKS3_TMP_DIR/post-build-hook"
 
 { \
@@ -41,14 +41,18 @@ chmod a+x "$NIKS3_TMP_DIR/post-build-hook"
   echo "post-build-hook = $NIKS3_TMP_DIR/post-build-hook" ;\
 } >> /etc/nix/nix.conf
 
+echo "+++ Nix Conf"
+cat /etc/nix/nix.conf
+echo "~~~ Nix Conf"
+
 echo "$token" > "$NIKS3_TMP_DIR/auth-token"
 
 # watch for builds in the background
-nohup nix run github:Mic92/niks3#niks3-hook -- serve \
+nohup nix run https://github.com/Mic92/niks3#niks3-hook -- serve \
   --server-url "$server_url" \
   --auth-token-path "$NIKS3_TMP_DIR/auth-token" \
   --batch-size 5 \
-  --idle-exit-timeout 0 \
+  --idle-exit-timeout 300 \
   --socket "$NIKS3_TMP_DIR/upload-to-cache.sock" \
   --db-path "$NIKS3_TMP_DIR/upload-queue.db" \
   > "$NIKS3_TMP_DIR/serve.log" 2>&1 &
