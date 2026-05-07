@@ -31,8 +31,10 @@ fi
 NIKS3_TMP_DIR=$(mktemp -d)
 export NIKS3_TMP_DIR
 
+nix=$(which nix)
+
 echo "#/bin/sh" > "$NIKS3_TMP_DIR/post-build-hook"
-echo "exec nix run git+https://git.ocjtech.us/jeff/niks3#niks3-hook -- send --socket $NIKS3_TMP_DIR/upload-to-cache.sock" >> "$NIKS3_TMP_DIR/post-build-hook"
+echo "exec $nix run git+https://git.ocjtech.us/jeff/niks3#niks3-hook -- send --socket $NIKS3_TMP_DIR/upload-to-cache.sock" >> "$NIKS3_TMP_DIR/post-build-hook"
 chmod a+x "$NIKS3_TMP_DIR/post-build-hook"
 
 echo "extra-substituters = $cache_url" >> /etc/nix/nix.custom.conf
